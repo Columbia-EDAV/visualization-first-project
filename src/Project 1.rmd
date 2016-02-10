@@ -162,15 +162,10 @@ sankeyPlot$set(
   units = "TWh",
   title = "Editor-Program"
 )
-#sankeyPlot$publish("Sankey by Tool")
-save_stdout <- function(x){
-  paste(capture.output(x), collapse = '\n')
-}
-#save_stdout(sankeyPlot$show('inline', include_assets = TRUE, standalone = TRUE))
-sankeyPlot$print('iframesrc',  include_assets=TRUE)
+sankeyPlot$save('sankey.html',  cdn = TRUE)
 
 ```
-
+<iframe width="900" height="600" frameborder="0" src = 'sankey.html' ></iframe>
 ``````{r results="asis" }
 
 
