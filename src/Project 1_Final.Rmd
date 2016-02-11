@@ -20,7 +20,7 @@ library(reshape)
 
 
 # Read xlsx file
-raw.data <- read.xlsx("Survey+Response.xlsx", sheetName = "Form Responses 1")
+raw.data <- read.xlsx("../docs/Survey_Response.xlsx", sheetName = "Form Responses 1")
 data <- raw.data
 
 
@@ -156,7 +156,6 @@ The figure above helps us understand the experience distribution program-wise, c
 
 3. There is an almost equal distribution of students who are confident in Github and those who know "none" about it. 
 
-
 ```{r results="asis" }
 #install.packages("rjson")
 #install.packages("rCharts")
@@ -171,16 +170,18 @@ require('httr')
 require(rCharts)
 require(rjson)
 # Donut with Programs
-p5 <- rCharts$new()
-p5 <- nPlot(~program, data = data, type = 'pieChart')
-p5$chart(donut = TRUE)
-p5$print('iframe',  include_assets=TRUE)
-
+pie.program <- rCharts$new()
+pie.program <- nPlot(~program, data = data, type = 'pieChart')
+pie.program$chart(donut = TRUE)
+pie.program$print('iframe',  include_assets=TRUE)
+```
+Donut chart explains one of the most important features in our dataset. Almost 50% of our students are Master in data-science, and 20% are in certificate program.
+```{r results="asis" }
 #Sankey Graph
 data_t=as.data.frame(table(data$program,data$text.editor))
-#remove all data with 0 relations
-data_t=data_t[data_t[,3]>0,]
 colnames(data_t) <- c("source", "target", "value")
+data_t=data_t[data_t[,3]>0,]
+#remove all data with 0 relations
 sankeyPlot <- rCharts$new()
 sankeyPlot$setTemplate(script = "./rCharts_d3_sankey-gh-pages/layouts/chart.html")
 sankeyPlot$setLib('http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey')
@@ -189,20 +190,59 @@ sankeyPlot$set(
   nodeWidth = 15,
   nodePadding = 10,
   layout = 32,
-  width = 800,
+  width = 750,
   height = 500,
   units = "TWh",
   title = "Editor-Program"
 )
-#sankeyPlot$publish("Sankey by Tool")
-save_stdout <- function(x){
-  paste(capture.output(x), collapse = '\n')
-}
-#save_stdout(sankeyPlot$show('inline', include_assets = TRUE, standalone = TRUE))
-sankeyPlot$print('iframesrc',  include_assets=TRUE)
+
+sankeyPlot$save('sankey.html',  cdn = TRUE)
+
+
+
+
 
 ```
+<iframe width="900" height="520" frameborder="0" src = 'sankey.html' ></iframe>
+The sankey chart is a good way to present a relationship between two o more variables, in this particular case  *program* and *text Editor*. it shows a preference by RStudio that is explained by the huge number of statistic and data-science master. However few students of statistics prefer different editors compare with Data-science where 40% of the students do not use RStudio.
+``````{r results="asis" }
+col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
+                 ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
+matrix={}
+for (name.col in col.names.data){
+  row=cbind(name.col,cbind(as.character(data[,"program"]),as.character(data[,name.col])))
+  matrix=rbind(matrix,row)
+}
+data.splot.tool=as.data.frame(matrix)
+colnames(data.splot.tool)=c("tool","program","use")
+data.splot.f=data.splot.tool[data.splot.tool$use != "None",]
+data.final=as.data.frame(table(data.splot.f$program,data.splot.f$tool))
+data.s=as.data.frame(table(data.splot.tool$tool,data.splot.tool$use))
+colnames(data.s) <- c("source", "target", "value")
+colnames(data.final) <- c("source", "target", "value")
+data_sfinal=rbind(data.s,data.final)
 
+#remove all data with 0 relations
+sankeyPlotTool <- rCharts$new()
+sankeyPlotTool$setTemplate(script = "./rCharts_d3_sankey-gh-pages/layouts/chart.html")
+sankeyPlotTool$setLib('http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey')
+sankeyPlotTool$set(
+  data = data_sfinal,
+  nodeWidth = 15,
+  nodePadding = 10,
+  layout = 35,
+  width = 750,
+  height = 500,
+  units = "TWh",
+  title = "Editor-Program"
+)
+
+sankeyPlotTool$save('sankey_tool.html',  standalone = TRUE)
+
+
+```
+<iframe width="900" height="520" frameborder="0" src = 'sankey_tool.html' ></iframe>
+This Chart shows a relation between *program* , *tool* and *experience level*. We removed the association between program and tool when the level of experience is None. In Master Data-Science (IDSE) Github and Matlab are the most unknown topic and in certification program have a poor experience with R.reproducible. However 30% of all students do not have any knowledge in Matlab and 91% of them have worked with R.Manipulation.
 Analysis on Tools:
 
 First we put all tools together and looked at the number of users. 
@@ -269,6 +309,27 @@ qplot(data$exp.Github)
 ```
 
 Very similar to what happens in the last graph, most of the students do not or have limited experience in Github.
+``````{r results="asis" }
+
+
+
+col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
+                 ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
+matrix={}
+for (name.col in col.names.data){
+  row=cbind(name.col,as.character(data[,name.col]))
+  matrix=rbind(matrix,row)
+}
+data.boxplot=as.data.frame(matrix)
+colnames(data.boxplot)=c("tool","experience")
+
+n2<-rCharts$new()
+n2 = nPlot( ~experience,group="tool", data = data.boxplot, type = "multiBarChart")
+n2$print('inline',  include_assets=TRUE)
+
+```
+The Multibarplot is used to summarize the experience  with out taking account the program. R manipulation and graphics are topics that the students are confident. The number of confident students in any tool is similar to the number of students with a lack experience. Little is the most likely answer
+
 
 
 ```{r}
