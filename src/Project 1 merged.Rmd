@@ -19,7 +19,7 @@ library(reshape)
 
 
 # Read xlsx file
-raw.data <- read.xlsx("../docs/Survey_Response.xlsx", sheetName = "Form Responses 1")
+raw.data <- read.xlsx("Survey+Response.xlsx", sheetName = "Form Responses 1")
 data <- raw.data
 
 
@@ -255,6 +255,7 @@ n2$print('inline',  include_assets=TRUE)
 
 # Phoebe
 ```
+## 
 par(mar=c(3,3,3,3))
 barplot(table(data$waitlist))
 barplot(table(data$exp.R.manipulation))
@@ -269,7 +270,7 @@ tools = data.matrix(data)[,11:30]
 barplot(tools,xlab="Tools", names.arg = as.vector(colnames(as.matrix(data)[,11:30])),
         ylab="Number of Students" , ylim = c(0,80),cex.names = 0.6, col="light blue")
 
-
+## Following codes are used to create a pie chart to show the distribution of the use of tools. There are lots of tools are not common or not used in the students of these class. Therefore I combine all those into one category. 
 par(mar=c(0.5,0.5,0.5,.5))
 t <-colSums(tools)
 pie(colSums(tools),radius = 1)
@@ -279,18 +280,21 @@ s.t[7,1] <- other
 s.t<-as.matrix(s.t[1:7,1])
 rownames(s.t)<-c("R","Matlab","Excel","Github","SQL","Rstudio","other")
 pie(s.t[1:7,])
+## R is still the most common choice among the students in this class. Matlab is the next. Majority of the studetns don't have enought experience with the github. 
 
+## import library "ggplot2"
 library(ggplot2)
-qplot(data$exp.R.graphics, data = data)
-qplot(data$waitlist)
-qplot(data$program)
-qplot(data$exp.R.advanced)
-qplot(data$exp.R.manipulation)
-qplot(data$gender)
-qplot(data$text.editor)
-qplot(data$exp.R.reproducible)
-qplot(data$exp.Matlab)
-qplot(data$exp.Github)
+## all of the following codes are designed to illustrate the experience with each tool.
+qplot(data$exp.R.graphics, data = data) ## majority of the student have limited expereince with the R.graphics.
+qplot(data$waitlist) # the waitlist for this class was not very long.
+qplot(data$program) # the diversity of the students is not that big. It's understandable since this is class for DS major specifically.
+qplot(data$exp.R.advanced) # Similar to the R graphics skills, students have limited experiene in advanced packages in R as well.
+qplot(data$exp.R.manipulation) #Contrary to the previous two categories, more students have confidence and experience with data manipulation in R.
+qplot(data$gender) #the number of male students are more than twice of the girls.
+qplot(data$text.editor) # the number of studetns using Rstudio are lot more than any other text editor tools.
+qplot(data$exp.R.reproducible) # it seems like that this part of the R functions are less common than other three.
+qplot(data$exp.Matlab) # Matlab is not common choice among the students in the past.
+qplot(data$exp.Github) # Same for the Github.
 ```
 
 
