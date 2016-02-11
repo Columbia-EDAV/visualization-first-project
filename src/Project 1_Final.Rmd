@@ -1,0 +1,284 @@
+---
+title: "Project 1_Final"
+output: html_document
+---
+
+The following code are designed to clean the dataset by creating binary variables for the tools students used in the past, gender. Meanwhile, for some ambiguous terms or similar terms, we combined them together to make further analysis easier. 
+```{r}
+#############################
+# < Waitlist Survivors >
+#
+# STAT W4701 
+# Homework < 01 >
+# < Feb 11th >
+#
+#############################
+#setwd("~/Documents/Study/Spring 2016/EDAV")
+
+library(xlsx)
+library(reshape)
+
+
+# Read xlsx file
+raw.data <- read.xlsx("Survey+Response.xlsx", sheetName = "Form Responses 1")
+data <- raw.data
+
+
+# drop empty columns
+data <- data[, colSums(is.na(data)) < nrow(data)]
+
+
+# Clean up variable names
+cleaned.names <- c('waitlist', 'program','tools','exp.R.manipulation',
+          'gender','text.editor','exp.R.graphics','exp.R.advanced','exp.R.reproducible','exp.Matlab','exp.Github')
+names(data) <- cleaned.names
+
+library(stringr)
+# Split tools column into multiple columns
+## Count the maximum number of commas per row in the tools column
+num.commas <- max(sapply(gregexpr(",", data$tools, fixed = TRUE), function(x) max(length(x)))) + 1
+## Split the tools column in separate columns
+tool.cols <- colsplit(data$tools,"[,]",names=sapply(1:num.commas, function(x) paste('tools', x, sep='')))
+tool.cols <- sapply(tool.cols, str_trim)
+unique.tool.values <- unique(unlist(lapply(tool.cols, FUN=unique)))
+
+tool.matrix <- matrix(0, nrow = nrow(tool.cols),20)
+
+tool.names <- unique.tool.values
+colnames(tool.matrix) <- tool.names
+tool.matrix <- as.data.frame(tool.matrix)
+for (i in 1:ncol(tool.cols) ) {
+      for (tool.name in tool.names) {
+          tool.matrix[which(tool.cols[, i] == tool.name), tool.name] <- 1
+          }
+}
+
+clean.tool.names <- c("R", "Excel", "Matlab", "RStudio", "Github", "SQL", "Shell", "Python", "SPSS", "ggplot2", "GDrive", "Web", "C", "Dropbox", "Regex", "Stata", "LaTeX", "Sweave", "XML", "Lattice")
+names(tool.matrix) <- clean.tool.names
+data <- cbind(data, tool.matrix)
+data <- subset(data, select=-c(tools))
+
+
+# Clean up inconsistent program values
+levels(data$program)
+sort(table(data$program))
+levels(data$program)[levels(data$program)=="Ms in ds"] <- "IDSE (master)"
+levels(data$program)[levels(data$program)=="MSDS"] <- "IDSE (master)"
+levels(data$program)[levels(data$program)=="PhD Biomedical Informatics"] <- "Ph.D."
+levels(data$program)[levels(data$program)=="Data Science"] <- "Unknown"
+
+
+# Clean up text editor values
+levels(data$text.editor)
+sort(table(data$text.editor))
+# Remove extra spaces
+data$text.editor <- factor(str_trim(data$text.editor))
+
+levels(data$text.editor)[levels(data$text.editor)=="textwrangler"] <- "TextWrangler"
+levels(data$text.editor)[levels(data$text.editor)=="Text Wrangler"] <- "TextWrangler"
+levels(data$text.editor)[levels(data$text.editor)=="textWrangler"] <- "TextWrangler"
+
+levels(data$text.editor)[levels(data$text.editor)=="Sublime"] <- "Sublime Text"
+levels(data$text.editor)[levels(data$text.editor)=="Sublime Text 2"] <- "Sublime Text"
+levels(data$text.editor)[levels(data$text.editor)=="sublime"] <- "Sublime Text"
+levels(data$text.editor)[levels(data$text.editor)=="Sublime Text!"] <- "Sublime Text"
+levels(data$text.editor)[levels(data$text.editor)=="sublime text 2"] <- "Sublime Text"
+levels(data$text.editor)[levels(data$text.editor)=="Sublime 2"] <- "Sublime Text"
+levels(data$text.editor)[levels(data$text.editor)=="sublime text"] <- "Sublime Text"
+
+levels(data$text.editor)[levels(data$text.editor)=="I used jupyter last semester"] <- "Jupyter"
+# Ipython is now known as Jupyter
+levels(data$text.editor)[levels(data$text.editor)=="Ipython"] <- "Jupyter"
+
+levels(data$text.editor)[levels(data$text.editor)=="haven't used any"] <- "None"
+
+# Assign level ordering to experience variables
+experience.cols <- names(data)[grepl("^exp.", names(data))]
+for (exp.col in experience.cols) {
+  data[, exp.col] <- factor(data[, exp.col], levels=levels(data[, exp.col])[c(4, 1, 2, 3)], ordered=TRUE)
+}
+```
+
+Analysis on Gender:
+
+
+```{r}
+library(ggplot2)
+qplot(data$gender)
+```
+
+The code above generage a graph to demonstrate the ratio of male and female students. It is obvious to see that the number of male students are more than twice of the females in this class.Next is a more sophiscated plot and analysis on gender and the experience with R manipulation, advanced R, Matlab and Github.
+
+```{r}
+library(cowplot)
+data.1 <- data[c(-8,-98),]
+g7 <- ggplot( data.1, aes(exp.R.manipulation, fill= gender))+geom_density(alpha=0.5, lwd=0.8, adjust=0.5)+theme(text=element_text(size=10),axis.text.x= element_text(size=7))
+g8 <- ggplot( data.1, aes(exp.R.advanced, fill= gender))+geom_density(alpha=0.5, lwd=0.8, adjust=0.5)+theme(text=element_text(size=10),axis.text.x= element_text(size=7))
+g9 <- ggplot( data.1, aes(exp.Matlab, fill= gender))+geom_density(alpha=0.5, lwd=0.8, adjust=0.5)+theme(text=element_text(size=10),axis.text.x= element_text(size=7))
+g10 <- ggplot( data.1, aes(exp.Github, fill= gender))+geom_density(alpha=0.5, lwd=0.8, adjust=0.5)+theme(text=element_text(size=10),axis.text.x= element_text(size=7))
+plot_grid(g7,g8,g9,g10,labels=c("Manipulation","Advanced R","Matlab","Github"),label_size=10)
+```
+
+This density plot shows the distribution of skills in the four areas highlighted. As the size of the two groups(men-women) isn't equal in the class it is necessary to normalize the data as per frequency. 
+
+Even with frequency accounted for we observed unequal skill distribution.
+
+1. When it comes to basic R manipulation there is a higher percentage of men who have little  to none experience with R, while there are no women who are "experts"
+
+2. The distribution for advanced R, Matlab and Github has a slightly higher percentage of men in all categories. 
+
+Analysis on Programs
+```{r}
+comp.R.exp <- data[,2:10]
+
+g1 <- ggplot( comp.R.exp, aes(exp.R.manipulation, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
+
+g2 <- ggplot( comp.R.exp, aes(exp.R.graphics, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
+
+g3 <- ggplot( comp.R.exp, aes(exp.R.advanced, fill= program))+geom_bar()+theme(legend.position= "none",text= element_text(size=10),axis.text.x= element_text(size=10))
+
+g4 <- ggplot( comp.R.exp, aes(exp.R.reproducible, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
+
+g5 <- ggplot( comp.R.exp, aes(exp.Matlab, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
+
+g6 <- ggplot( comp.R.exp, aes(exp.Github, fill= program))+geom_bar()+theme(text=element_text(size=10),axis.text.x= element_text(size=10))
+
+
+require(cowplot)
+plot_grid(g1,g2,g3,g4,g5,g6,labels=c("Manipulation","Graphics","Advanced R","Markdown","Matlab","Github"),label_size=8,vjust=1, ncol=2,nrow=3)
+```
+
+The figure above helps us understand the experience distribution program-wise, categorized by 4 ordered levels (None < A little < Confident < Expert) . A few inferences that can be drawn from  the graph are as follows :
+
+1. A majority of class is confident in data manipulation in R with very few individuals in the none category and expert category. But its noteworthy that data manipulation in "Expert" category is the highest value among all the expert categories.
+
+2. A majority of students have "little" to "none" expertise in producing reproducible research and Matlab. Hypothetically the instructor should focus on these areas. 
+
+3. There is an almost equal distribution of students who are confident in Github and those who know "none" about it. 
+
+
+```{r results="asis" }
+#install.packages("rjson")
+#install.packages("rCharts")
+#install.packages("devtools")
+#install.packages("Rcpp")
+#install_github('ramnathv/rCharts')
+
+
+library(devtools)
+library(Rcpp)
+require('httr')
+require(rCharts)
+require(rjson)
+# Donut with Programs
+p5 <- rCharts$new()
+p5 <- nPlot(~program, data = data, type = 'pieChart')
+p5$chart(donut = TRUE)
+p5$print('iframe',  include_assets=TRUE)
+
+#Sankey Graph
+data_t=as.data.frame(table(data$program,data$text.editor))
+#remove all data with 0 relations
+data_t=data_t[data_t[,3]>0,]
+colnames(data_t) <- c("source", "target", "value")
+sankeyPlot <- rCharts$new()
+sankeyPlot$setTemplate(script = "./rCharts_d3_sankey-gh-pages/layouts/chart.html")
+sankeyPlot$setLib('http://timelyportfolio.github.io/rCharts_d3_sankey/libraries/widgets/d3_sankey')
+sankeyPlot$set(
+  data = data_t,
+  nodeWidth = 15,
+  nodePadding = 10,
+  layout = 32,
+  width = 800,
+  height = 500,
+  units = "TWh",
+  title = "Editor-Program"
+)
+#sankeyPlot$publish("Sankey by Tool")
+save_stdout <- function(x){
+  paste(capture.output(x), collapse = '\n')
+}
+#save_stdout(sankeyPlot$show('inline', include_assets = TRUE, standalone = TRUE))
+sankeyPlot$print('iframesrc',  include_assets=TRUE)
+
+```
+
+Analysis on Tools:
+
+First we put all tools together and looked at the number of users. 
+```{r}
+library(vcd)
+# Total numer of use with all tools.
+barplot(sort(colSums(data[, 11:30]), decreasing = TRUE), las = 3, cex.names = 0.9, ylab = "Total number", main = "Experience with all tools")
+```
+
+It turns out that R has the largest number of users, and Matlab follows R. Considering the class size, R, python and excel are most common ones among students and the rest, like Github, Matlab, C, LaTex are evenly distributed, which might have something to do with the major and program. We will get back to it later. 
+
+Next, we want to focus on those toolswhich are popular in this class. Because many tools are voted only once, we only select the top 7 text editor tools.
+
+```{r}
+# find out top 7 code editor tools used most.
+by_preferred_tool <- table(data$text.editor)
+by_preferred_tool <- sort(by_preferred_tool, decreasing = TRUE)[1:7]
+barplot(by_preferred_tool, las = 3, cex.names = 0.74, ylab = "Total number", main = "top 7 code editor tools used most")
+```
+
+We can see that RStudio is the most popular one, with huge preference among all other tools.
+
+The following graphs are single demonstration and analysis on each tools.
+
+```{r}
+qplot(data$text.editor,size=2) 
+```
+
+The number of studetns using Rstudio are lot more than any other text editor tools. Other common choices, reletively, are notepad+, sublime text and vim.
+
+```{r}
+qplot(data$exp.R.graphics, data = data)
+```
+
+More than half of the students have none or limited expereince with the R graphics. But there is still few expert in R graphics.
+
+```{r}
+qplot(data$exp.R.advanced) 
+```
+
+Similar to the R graphics skills, more than half of the students have limited experience in advanced packages in R as well.
+
+```{r}
+qplot(data$exp.R.manipulation) 
+```
+
+Contrary to the previous two categories, more students have confidence and experience with data manipulation in R.
+
+```{r}
+qplot(data$exp.R.reproducible)
+```
+
+It seems like that students' experience in this part of R are almost evenly distributed, except for the expert level. 
+
+```{r}
+qplot(data$exp.Matlab)
+```
+
+Majority of the students don't have or have limited experience in Matlab, just like in R graphics.
+
+```{r}
+qplot(data$exp.Github) 
+
+```
+
+Very similar to what happens in the last graph, most of the students do not or have limited experience in Github.
+
+
+```{r}
+
+exp_tool <- apply(data[ , c(3, 6:10)], 2, FUN = table)
+colnames(exp_tool) <- c("r_manipulation", "r_graphics", "r_advanced", "r_reproducible", "Matlab", "Github")
+spine(t(exp_tool), main = "Programming and Analytical Experiences with All Tools")
+
+```
+
+Generally, for each skill, there are few people who are experts of that certain skill. Most people (more than 2/3) know nothing and a little about R advanced, R reproducible, Matlab and Github, while more people are confident about R manipulation and R graphics. In general, it's a good mix of all kinds of skill sets.
+
+
