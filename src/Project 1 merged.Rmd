@@ -238,7 +238,7 @@ sankeyPlot$save('sankey.html',  cdn = TRUE)
 
 ```
 <iframe width="900" height="520" frameborder="0" src = 'sankey.html' ></iframe>
-The sankey chart is a good way to present a relationship between two o more variables, in this particular case  *programm* and *text Editor*. it shows a preference by RStudio that is explained by the huge number of statistic and data-science master. However few students of staistics prefer diferent editors compare with Data-science where 40% of the students do not use RStudio.
+The sankey chart is a good way to present a relationship between two o more variables, in this particular case  *program* and *text Editor*. it shows a preference by RStudio that is explained by the huge number of statistic and data-science master. However few students of statistics prefer different editors compare with Data-science where 40% of the students do not use RStudio.
 ``````{r results="asis" }
 col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
                  ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
@@ -276,7 +276,7 @@ sankeyPlotTool$save('sankey_tool.html',  standalone = TRUE)
 
 ```
 <iframe width="900" height="520" frameborder="0" src = 'sankey_tool.html' ></iframe>
-This Chart shows a realtion between *program* , *tool* and *experience level*. We removed the asociation between program and tool when the level of experience is None. In Master Data-Science (IDSE) Github and Matlab are the most unknow topic and in certification program have a poor experience with R.reproducible. However 30% of all students do not have any knowledge in Matlab and 91% of them have worked with R.Manipulation.
+This Chart shows a relation between *program* , *tool* and *experience level*. We removed the association between program and tool when the level of experience is None. In Master Data-Science (IDSE) Github and Matlab are the most unknown topic and in certification program have a poor experience with R.reproducible. However 30% of all students do not have any knowledge in Matlab and 91% of them have worked with R.Manipulation.
 ``````{r results="asis" }
 
 
@@ -296,7 +296,7 @@ n2 = nPlot( ~experience,group="tool", data = data.boxplot, type = "multiBarChart
 n2$print('inline',  include_assets=TRUE)
 
 ```
-The Multibarplot is used to summarize the exerience  with out taking account the program. R manipulation and graphics are topics that the students are confident. The number of confident students in any tool is similar to the number of students with a lack experience. Little is the most likely answer.
+The Multibarplot is used to summarize the experience  with out taking account the program. R manipulation and graphics are topics that the students are confident. The number of confident students in any tool is similar to the number of students with a lack experience. Little is the most likely answer
 
 
 # Phoebe
