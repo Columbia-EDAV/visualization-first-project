@@ -226,15 +226,9 @@ sankeyPlot$set(
   units = "TWh",
   title = "Editor-Program"
 )
-#sankeyPlot$publish("Sankey by Tool")
-save_stdout <- function(x){
-  paste(capture.output(x), collapse = '\n')
-}
-#save_stdout(sankeyPlot$show('inline', include_assets = TRUE, standalone = TRUE))
-sankeyPlot$print('iframesrc',  include_assets=TRUE)
-
+sankeyPlot$save('sankey.html',  cdn = TRUE)
 ```
-
+<iframe width="900" height="600" frameborder="0" src = 'sankey.html' ></iframe>
 ``````{r results="asis" }
 
 
@@ -243,7 +237,7 @@ col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
                  ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
 matrix={}
 for (name.col in col.names.data){
-  row=cbind(name.col,data[,name.col])
+  row=cbind(name.col,as.character(data[,name.col]))
   matrix=rbind(matrix,row)
 }
 data.boxplot=as.data.frame(matrix)
