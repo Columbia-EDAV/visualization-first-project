@@ -1,5 +1,5 @@
 ---
-title: "Project 1: The Class"
+title: 'Project 1: The Class'
 output: html_document
 ---
 
@@ -95,97 +95,74 @@ for (exp.col in experience.cols) {
 
 
 # Background
-The following analysis examines the 114 survey responses.
+The following analysis examines the 114 survey responses from our EDAV class.
 
-
+# Waitlist
+- 16% of the class started on the waitlist.
 ```{r echo=FALSE}
-ggplot(data, aes(waitlist)) + 
-  geom_bar() +
-  coord_flip() +
-  ggtitle('test') +
-  ylab('Waitlisted') 
+barplot(prop.table(table(data$waitlist)), las=1, main='Percent of class on waitlist', cex.names=.5, horiz=TRUE, xlab='Percent of class')
 ```
 
-
-
-Analysis of Gender:
-
+# Gender
+- 71% of the class is male, 28% female, and 1% says their gender doesn't matter.
 ```{r echo=FALSE}
-
-qplot(data$gender)
+barplot(prop.table(table(data$gender)), las=1, main='Gender distribution', cex.names=.5, horiz=TRUE, xlab='Percent of class')
 ```
 
-The code above generage a graph to demonstrate the ratio of male and female students. It is obvious to see that the number of male students are more than twice of the females in this class.Next is a more sophiscated plot and analysis on gender and the experience with R manipulation, advanced R, Matlab and Github.
-
-```{r echo=FALSE}
-# Exclude small sample sizes
-data.1 <- data[c(-8,-98),]
-g7 <- ggplot( data.1, aes(exp.R.manipulation, fill= gender)) +
-  geom_density(alpha=0.5, lwd=0.8, adjust=0.5) + 
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(size=7))
-
-g8 <- ggplot( data.1, aes(exp.R.advanced, fill= gender)) +
-  geom_density(alpha=0.5, lwd=0.8, adjust=0.5) +
-  theme(text=element_text(size=10),
-        axis.text.x= element_text(size=7))
-g9 <- ggplot( data.1, aes(exp.Matlab, fill= gender)) +
-  geom_density(alpha=0.5, lwd=0.8, adjust=0.5) +
-  theme(text=element_text(size=10),
-        axis.text.x= element_text(size=7))
-g10 <- ggplot( data.1, aes(exp.Github, fill= gender)) +
-  geom_density(alpha=0.5, lwd=0.8, adjust=0.5) +
-  theme(text=element_text(size=10), axis.text.x= element_text(size=7))
-
-
-plot_grid(g7,g8,g9,g10,labels=c("Manipulation","Advanced R","Matlab","Github"),label_size=10)
-```
-
-This density plot shows the distribution of skills in the four areas highlighted. As the size of the two groups(men-women) isn't equal in the class it is necessary to normalize the data as per frequency. 
-
-Even with frequency accounted for we observed unequal skill distribution.
-
-1. When it comes to basic R manipulation there is a higher percentage of men who have little  to none experience with R, while there are no women who are "experts"
-
-2. The distribution for advanced R, Matlab and Github has a slightly higher percentage of men in all categories. 
-
-Analysis on Programs
-```{r echo=FALSE}
-comp.R.exp <- data[,2:10]
-
-g1 <- ggplot( comp.R.exp, aes(exp.R.manipulation, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
-
-g2 <- ggplot( comp.R.exp, aes(exp.R.graphics, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
-
-g3 <- ggplot( comp.R.exp, aes(exp.R.advanced, fill= program))+geom_bar()+theme(legend.position= "none",text= element_text(size=10),axis.text.x= element_text(size=10))
-
-g4 <- ggplot( comp.R.exp, aes(exp.R.reproducible, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
-
-g5 <- ggplot( comp.R.exp, aes(exp.Matlab, fill= program))+geom_bar()+theme(legend.position= "none",text=element_text(size=10),axis.text.x= element_text(size=10))
-
-g6 <- ggplot( comp.R.exp, aes(exp.Github, fill= program))+geom_bar()+theme(text=element_text(size=10),axis.text.x= element_text(size=10))
-
-
-plot_grid(g1,g2,g3,g4,g5,g6,labels=c("Manipulation","Graphics","Advanced R","Markdown","Matlab","Github"),label_size=8,vjust=1, ncol=2,nrow=3)
-```
-
-The figure above helps us understand the experience distribution program-wise, categorized by 4 ordered levels (None < A little < Confident < Expert) . A few inferences that can be drawn from  the graph are as follows :
-
-1. A majority of class is confident in data manipulation in R with very few individuals in the none category and expert category. But its noteworthy that data manipulation in "Expert" category is the highest value among all the expert categories.
-
-2. A majority of students have "little" to "none" expertise in producing reproducible research and Matlab. Hypothetically the instructor should focus on these areas. 
-
-3. There is an almost equal distribution of students who are confident in Github and those who know "none" about it. 
-
-```{r results="asis" }
+# Program
+- Looking at the distribution of students by program we see that almost 50% of our students are Master in data-science, and 20% are in certificate program.
+  
+```{r results="asis", echo=FALSE }
 # Donut with Programs
 pie.program <- rCharts$new()
 pie.program <- nPlot(~program, data = data, type = 'pieChart')
 pie.program$chart(donut = TRUE)
 pie.program$print('iframe',  include_assets=TRUE)
 ```
-Donut chart explains one of the most important features in our dataset. Almost 50% of our students are Master in data-science, and 20% are in certificate program.
 
+# Tools
+- R, Python, and Excel are the most commonly used tools among students.
+```{r echo=FALSE}
+# Total numer of use with all tools.
+barplot(sort(colSums(data[, 11:30]) / nrow(data), decreasing = FALSE), las = 1, cex.names = 0.9, xlab = "Percent of students", main = "Experience with tools", hori=TRUE)
+```
+
+## Hierarchical clustering reveals distinct clusters of tool usage
+```{r echo=FALSE}
+corr.matrix <- cor(data[, 11:30])
+distance <- dist(corr.matrix)
+plot(hclust(distance), 
+     main="Hierarchical clustering of tools", xlab="Tool")
+```
+
+### We interpret these clusters as:
+- Excel & productivity tools
+- Engineering tools
+- Miscellaneous languages
+- R and R packages
+### A correlation plot reveals the granular relationships between tools:
+- There are some competitive products that are positively correlated while others are negatively correlated. For instance: dropbox and google drive are positively correlated while R and Python are negatively correlated. Perhaps it's because dropbox and google drive have similar usability while R and Python are less interchangeable.
+
+```{r echo=FALSE}
+ordering <- hclust(distance)$labels[hclust(distance)$order]
+color.map <- colorRamp(c("#CC0000","white","#3366CC"), space="Lab")
+plotcorr(corr.matrix[ordering,ordering], 
+         col=rgb(color.map((corr.matrix[ordering,ordering]+1)/2), maxColorValue=255),
+         mar = c(0.1, 0.1, 0.1, 0.1), type='lower')
+text(5.5, 19, labels = 'Excel users', col = rgb(0,0,0,.8))
+text(10, 15, labels = 'Engineering', col = rgb(0,0,0,.8))
+text(14, 9, labels = 'Misc.', col = rgb(0,0,0,.8))
+text(18, 5, labels = 'R users', col = rgb(0,0,0,.8))
+```
+
+# Text editors
+- The distribution of text editor shows that RStudio is heavily favored.
+```{r echo=FALSE}
+# find out top 7 code editor tools used most.
+by_preferred_tool <- sort(table(data$text.editor), decreasing = TRUE)[1:7]
+by_preferred_tool['Other'] <- sum(sort(table(data$text.editor), decreasing = TRUE)[8:18])
+barplot(by_preferred_tool / sum(by_preferred_tool), las = 1, cex.names = 0.74, ylab = "Total number", main = "Percent of users by text editor", horiz=TRUE)
+```
 
 ```{r echo=FALSE, results='asis'}
 #Sankey Graph
@@ -209,9 +186,95 @@ sankeyPlot$set(
 
 sankeyPlot$save('sankey.html',  cdn = TRUE)
 ```
+The sankey chart shows that the preference for RStudio is explained by the large number of statistic and data-science master. However few students of statistics prefer different editors compare with Data-science where 40% of the students do not use RStudio.
+
 <iframe width="900" height="520" frameborder="0" src = 'sankey.html' ></iframe>
-The sankey chart is a good way to present a relationship between two o more variables, in this particular case  *program* and *text Editor*. it shows a preference by RStudio that is explained by the huge number of statistic and data-science master. However few students of statistics prefer different editors compare with Data-science where 40% of the students do not use RStudio.
-``````{r results="asis" }
+
+
+
+
+
+
+
+
+We can see that RStudio is the most popular one, with huge preference among all other tools.
+
+The following graphs are single demonstration and analysis on each tools.
+
+The number of studetns using Rstudio are lot more than any other text editor tools. Other common choices, reletively, are notepad+, sublime text and vim.
+
+
+
+
+
+
+# Experience by tool
+- More than half of the students have none or limited expereince with the R graphics. But there is still few expert in R graphics.
+- Similar to the R graphics skills, more than half of the students have limited experience in advanced packages in R as well.
+- Contrary to the previous two categories, more students have confidence and experience with data manipulation in R.
+- It seems like that students' experience in this part of R are almost evenly distributed, except for the expert level. 
+- Majority of the students don't have or have limited experience in Matlab, just like in R graphics.
+- Very similar to what happens in the last graph, most of the students do not or have limited experience in Github.
+
+The Multibarplot is used to summarize the experience  with out taking account the program. R manipulation and graphics are topics that the students are confident. The number of confident students in any tool is similar to the number of students with a lack experience. Little is the most likely answer
+
+
+
+``````{r results="asis", echo=FALSE }
+
+col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
+                 ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
+matrix={}
+for (name.col in col.names.data){
+  row=cbind(name.col,as.character(data[,name.col]))
+  matrix=rbind(matrix,row)
+}
+data.boxplot=as.data.frame(matrix)
+colnames(data.boxplot)=c("tool","experience")
+data.boxplot$experience <- factor(data.boxplot$experience, c("None","A little","Confident","Expert"))
+
+n2<-rCharts$new()
+n2 = nPlot( ~tool,group="experience", data = data.boxplot, type = "multiBarChart")
+n2$chart(stacked=TRUE)
+n2$print('inline',  include_assets=TRUE)
+
+```
+
+Generally, for each skill, there are few people who are experts of that certain skill. Most people (more than 2/3) know nothing and a little about R advanced, R reproducible, Matlab and Github, while more people are confident about R manipulation and R graphics. In general, it's a good mix of all kinds of skill sets.
+
+
+Tool expertise by program
+-	Generally, Data Science students know less about all these first five tools. But they are pretty good at using Github. 
+-	Other masters other than data science are good at R manipulation and R graphics. At least, none of them know nothing about these two tools.
+-	Among all these six tools, experts are minority. Most of them are in statistics major.
+-	Most of students, whatever his/her major is, only know a little about them. It means that we are far from to be a qualified data scientist.
+
+```{r echo=FALSE, warning=FALSE}
+programs <- c('IDSE (master)', 'Data Science Certification', 'Statistics (master)', 'Other masters')
+par(mfrow=c(3,2))
+
+exp.by.program <- data[data$program %in% programs,]
+exp.by.program['program'] <- factor(exp.by.program$program, levels=unique(exp.by.program$program))
+barplot(prop.table(table(exp.by.program$exp.R.manipulation, exp.by.program$program), 2), las=1, main='R Manipulation', cex.names=.6)
+barplot(prop.table(table(exp.by.program$exp.R.graphics, exp.by.program$program), 2), las=1, main='R Graphics', cex.names=.6)
+barplot(prop.table(table(exp.by.program$exp.R.advanced, exp.by.program$program), 2), las=1, main='R Advanced', cex.names=.6)
+barplot(prop.table(table(exp.by.program$exp.R.reproducible, exp.by.program$program), 2), las=1, main='R reproducible', cex.names=.6)
+barplot(prop.table(table(exp.by.program$exp.Matlab, exp.by.program$program), 2), las=1, main='Matlab', cex.names=.6)
+barplot(prop.table(table(exp.by.program$exp.Github, exp.by.program$program), 2), las=1, main='Github', cex.names=.6)
+```
+
+The figure above helps us understand the experience distribution program-wise, categorized by 4 ordered levels (None < A little < Confident < Expert) . A few inferences that can be drawn from  the graph are as follows :
+
+1. A majority of class is confident in data manipulation in R with very few individuals in the none category and expert category. But its noteworthy that data manipulation in "Expert" category is the highest value among all the expert categories.
+
+2. A majority of students have "little" to "none" expertise in producing reproducible research and Matlab. Hypothetically the instructor should focus on these areas. 
+
+3. There is an almost equal distribution of students who are confident in Github and those who know "none" about it. 
+
+
+
+
+``````{r results="asis", echo=FALSE, message=FALSE }
 col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
                  ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
 matrix={}
@@ -250,137 +313,4 @@ sankeyPlotTool$save('sankey_tool.html',  standalone = TRUE)
 <iframe width="900" height="520" frameborder="0" src = 'sankey_tool.html' ></iframe>
 This Chart shows a relation between *program* , *tool* and *experience level*. We removed the association between program and tool when the level of experience is None. In Master Data-Science (IDSE) Github and Matlab are the most unknown topic and in certification program have a poor experience with R.reproducible. However 30% of all students do not have any knowledge in Matlab and 91% of them have worked with R.Manipulation.
 Analysis on Tools:
-
-
-# Tools
-
-- R, Python, and Excel are the most commonly used tools among students.
-```{r echo=FALSE}
-
-# Total numer of use with all tools.
-barplot(sort(colSums(data[, 11:30]) / nrow(data), decreasing = TRUE), las = 3, cex.names = 0.9, ylab = "Percent of students", main = "Experience with all tools")
-```
-
-Hierarchical clustering reveals distinct clusters of tool usage.
-
-We interpret these clusters as:
-- Excel users
-- Engineering tools
-- Miscellaneous languages
-- R and R packages
-```{r echo=FALSE}
-corr.matrix <- cor(data[, 11:30])
-distance <- dist(corr.matrix)
-plot(hclust(distance), 
-     main="Hierarchical clustering of tools", xlab="Tool")
-```
-The correlation plot below reveals the finer relationships between these clusters.
-Some notable relationships:
-- Negative relationship between R and Python: Students tend to use one or the other.
-- 
-
-```{r echo=FALSE}
-ordering <- hclust(distance)$labels[hclust(distance)$order]
-color.map <- colorRamp(c("#CC0000","white","#3366CC"), space="Lab")
-plotcorr(corr.matrix[ordering,ordering], 
-         col=rgb(color.map((corr.matrix[ordering,ordering]+1)/2), maxColorValue=255),
-         mar = c(0.1, 0.1, 0.1, 0.1), type='lower')
-text(5.5, 19, labels = 'Excel users', col = rgb(0,0,0,.8))
-text(10, 15, labels = 'Engineering', col = rgb(0,0,0,.8))
-text(14, 9, labels = 'Misc.', col = rgb(0,0,0,.8))
-text(18, 5, labels = 'R users', col = rgb(0,0,0,.8))
-```
-
-
-
-
-Next, we want to focus on those tools which are popular in this class. Because many tools are voted only once, we only select the top 7 text editor tools.
-
-```{r echo=FALSE}
-# find out top 7 code editor tools used most.
-by_preferred_tool <- table(data$text.editor)
-by_preferred_tool <- sort(by_preferred_tool, decreasing = TRUE)[1:7]
-barplot(by_preferred_tool, las = 3, cex.names = 0.74, ylab = "Total number", main = "top 7 code editor tools used most")
-```
-
-We can see that RStudio is the most popular one, with huge preference among all other tools.
-
-The following graphs are single demonstration and analysis on each tools.
-
-The number of studetns using Rstudio are lot more than any other text editor tools. Other common choices, reletively, are notepad+, sublime text and vim.
-
-
-
-
-
-
-```{r echo=FALSE}
-qplot(data$exp.R.graphics, data = data)
-```
-
-More than half of the students have none or limited expereince with the R graphics. But there is still few expert in R graphics.
-
-```{r echo=FALSE}
-qplot(data$exp.R.advanced) 
-```
-
-Similar to the R graphics skills, more than half of the students have limited experience in advanced packages in R as well.
-
-```{r echo=FALSE}
-qplot(data$exp.R.manipulation) 
-```
-
-Contrary to the previous two categories, more students have confidence and experience with data manipulation in R.
-
-```{r echo=FALSE}
-qplot(data$exp.R.reproducible)
-```
-
-It seems like that students' experience in this part of R are almost evenly distributed, except for the expert level. 
-
-```{r echo=FALSE}
-qplot(data$exp.Matlab)
-```
-
-Majority of the students don't have or have limited experience in Matlab, just like in R graphics.
-
-```{r echo=FALSE}
-qplot(data$exp.Github) 
-
-```
-
-Very similar to what happens in the last graph, most of the students do not or have limited experience in Github.
-``````{r results="asis" }
-
-
-
-col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
-                 ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
-matrix={}
-for (name.col in col.names.data){
-  row=cbind(name.col,as.character(data[,name.col]))
-  matrix=rbind(matrix,row)
-}
-data.boxplot=as.data.frame(matrix)
-colnames(data.boxplot)=c("tool","experience")
-
-n2<-rCharts$new()
-n2 = nPlot( ~experience,group="tool", data = data.boxplot, type = "multiBarChart")
-n2$print('inline',  include_assets=TRUE)
-
-```
-The Multibarplot is used to summarize the experience  with out taking account the program. R manipulation and graphics are topics that the students are confident. The number of confident students in any tool is similar to the number of students with a lack experience. Little is the most likely answer
-
-
-
-```{r echo=FALSE} 
-
-exp_tool <- apply(data[ , c(3, 6:10)], 2, FUN = table)
-colnames(exp_tool) <- c("r_manipulation", "r_graphics", "r_advanced", "r_reproducible", "Matlab", "Github")
-spine(t(exp_tool), main = "Programming and Analytical Experiences with All Tools")
-
-```
-
-Generally, for each skill, there are few people who are experts of that certain skill. Most people (more than 2/3) know nothing and a little about R advanced, R reproducible, Matlab and Github, while more people are confident about R manipulation and R graphics. In general, it's a good mix of all kinds of skill sets.
-
 
