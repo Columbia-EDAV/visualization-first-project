@@ -100,7 +100,7 @@ The following analysis examines the 114 survey responses from our EDAV class.
 # Waitlist
 - 16% of the class started on the waitlist.
 ```{r echo=FALSE}
-barplot(prop.table(table(data$waitlist)), las=1, main='Percent of class on waitlist', cex.names=.5, horiz=TRUE, xlab='Percent of class')
+barplot(prop.table(table(data$waitlist)), las=1, main='Percent of class on waitlist', cex.names=.8, horiz=TRUE, xlab='Percent of class')
 ```
 
 # Gender
@@ -140,6 +140,7 @@ plot(hclust(distance),
 - Engineering tools
 - Miscellaneous languages
 - R and R packages
+
 ### A correlation plot reveals the granular relationships between tools:
 - There are some competitive products that are positively correlated while others are negatively correlated. For instance: dropbox and google drive are positively correlated while R and Python are negatively correlated. Perhaps it's because dropbox and google drive have similar usability while R and Python are less interchangeable.
 
@@ -149,10 +150,10 @@ color.map <- colorRamp(c("#CC0000","white","#3366CC"), space="Lab")
 plotcorr(corr.matrix[ordering,ordering], 
          col=rgb(color.map((corr.matrix[ordering,ordering]+1)/2), maxColorValue=255),
          mar = c(0.1, 0.1, 0.1, 0.1), type='lower')
-text(5.5, 19, labels = 'Excel users', col = rgb(0,0,0,.8))
+text(5.5, 19, labels = 'Excel & productivity', col = rgb(0,0,0,.8))
 text(10, 15, labels = 'Engineering', col = rgb(0,0,0,.8))
 text(14, 9, labels = 'Misc.', col = rgb(0,0,0,.8))
-text(18, 5, labels = 'R users', col = rgb(0,0,0,.8))
+text(18, 5, labels = 'R', col = rgb(0,0,0,.8))
 ```
 
 # Text editors
@@ -161,7 +162,7 @@ text(18, 5, labels = 'R users', col = rgb(0,0,0,.8))
 # find out top 7 code editor tools used most.
 by_preferred_tool <- sort(table(data$text.editor), decreasing = TRUE)[1:7]
 by_preferred_tool['Other'] <- sum(sort(table(data$text.editor), decreasing = TRUE)[8:18])
-barplot(by_preferred_tool / sum(by_preferred_tool), las = 1, cex.names = 0.74, ylab = "Total number", main = "Percent of users by text editor", horiz=TRUE)
+barplot(by_preferred_tool / sum(by_preferred_tool), las = 1, cex.names = 0.6, xlab = "Percent", main = "Percent of users by text editor", horiz=TRUE)
 ```
 
 ```{r echo=FALSE, results='asis'}
@@ -186,38 +187,14 @@ sankeyPlot$set(
 
 sankeyPlot$save('sankey.html',  cdn = TRUE)
 ```
-The sankey chart shows that the preference for RStudio is explained by the large number of statistic and data-science master. However few students of statistics prefer different editors compare with Data-science where 40% of the students do not use RStudio.
+- The sankey chart shows that the preference for RStudio is explained by the large number of statistic and data-science masters students.
+- We can see text editor preferences by program: few students of statistics prefer different editors while 40% of data-science students do not use RStudio. 
 
 <iframe width="900" height="520" frameborder="0" src = 'sankey.html' ></iframe>
 
-
-
-
-
-
-
-
-We can see that RStudio is the most popular one, with huge preference among all other tools.
-
-The following graphs are single demonstration and analysis on each tools.
-
-The number of studetns using Rstudio are lot more than any other text editor tools. Other common choices, reletively, are notepad+, sublime text and vim.
-
-
-
-
-
-
 # Experience by tool
-- More than half of the students have none or limited expereince with the R graphics. But there is still few expert in R graphics.
-- Similar to the R graphics skills, more than half of the students have limited experience in advanced packages in R as well.
-- Contrary to the previous two categories, more students have confidence and experience with data manipulation in R.
-- It seems like that students' experience in this part of R are almost evenly distributed, except for the expert level. 
-- Majority of the students don't have or have limited experience in Matlab, just like in R graphics.
-- Very similar to what happens in the last graph, most of the students do not or have limited experience in Github.
-
-The Multibarplot is used to summarize the experience  with out taking account the program. R manipulation and graphics are topics that the students are confident. The number of confident students in any tool is similar to the number of students with a lack experience. Little is the most likely answer
-
+- When it comes to R, students are more experienced with manipulation than with other skills.
+- Students have little to no experience with most of the tools below
 
 
 ``````{r results="asis", echo=FALSE }
