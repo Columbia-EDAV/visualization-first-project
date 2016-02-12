@@ -199,7 +199,7 @@ sankeyPlot$save('sankey.html',  cdn = TRUE)
 
 ``````{r results="asis", echo=FALSE }
 
-col.names.data=c("exp.R.advanced","exp.Github","exp.R.reproducible"
+col.names.data <- c("exp.R.advanced","exp.Github","exp.R.reproducible"
                  ,"exp.R.manipulation","exp.R.graphics","exp.Matlab")
 matrix={}
 for (name.col in col.names.data){
@@ -210,6 +210,14 @@ data.boxplot=as.data.frame(matrix)
 colnames(data.boxplot)=c("tool","experience")
 data.boxplot$experience <- factor(data.boxplot$experience, c("None","A little","Confident","Expert"))
 
+levels(data.boxplot$tool)[levels(data.boxplot$tool)=="exp.R.advanced"] <- "R.advanced"
+levels(data.boxplot$tool)[levels(data.boxplot$tool)=="exp.R.reproducible"] <- "R.reproducible"
+levels(data.boxplot$tool)[levels(data.boxplot$tool)=="exp.R.manipulation"] <- "R.manipulation"
+levels(data.boxplot$tool)[levels(data.boxplot$tool)=="exp.R.graphics"] <- "R.graphics"
+levels(data.boxplot$tool)[levels(data.boxplot$tool)=="exp.Matlab"] <- "Matlab"
+levels(data.boxplot$tool)[levels(data.boxplot$tool)=="exp.Github"] <- "Github"
+
+
 n2<-rCharts$new()
 n2 = nPlot( ~tool,group="experience", data = data.boxplot, type = "multiBarChart")
 n2$chart(stacked=TRUE)
@@ -217,15 +225,13 @@ n2$print('inline',  include_assets=TRUE)
 
 ```
 
-Generally, for each skill, there are few people who are experts of that certain skill. Most people (more than 2/3) know nothing and a little about R advanced, R reproducible, Matlab and Github, while more people are confident about R manipulation and R graphics. In general, it's a good mix of all kinds of skill sets.
 
 
-Tool expertise by program
+# Tool expertise by program
 -	Generally, Data Science students know less about all these first five tools. But they are pretty good at using Github. 
 -	Other masters other than data science are good at R manipulation and R graphics. At least, none of them know nothing about these two tools.
 -	Among all these six tools, experts are minority. Most of them are in statistics major.
--	Most of students, whatever his/her major is, only know a little about them. It means that we are far from to be a qualified data scientist.
-
+-	Most of students, whatever his/her major is, only know a little about them.
 ```{r echo=FALSE, warning=FALSE}
 programs <- c('IDSE (master)', 'Data Science Certification', 'Statistics (master)', 'Other masters')
 par(mfrow=c(3,2))
@@ -240,13 +246,6 @@ barplot(prop.table(table(exp.by.program$exp.Matlab, exp.by.program$program), 2),
 barplot(prop.table(table(exp.by.program$exp.Github, exp.by.program$program), 2), las=1, main='Github', cex.names=.6)
 ```
 
-The figure above helps us understand the experience distribution program-wise, categorized by 4 ordered levels (None < A little < Confident < Expert) . A few inferences that can be drawn from  the graph are as follows :
-
-1. A majority of class is confident in data manipulation in R with very few individuals in the none category and expert category. But its noteworthy that data manipulation in "Expert" category is the highest value among all the expert categories.
-
-2. A majority of students have "little" to "none" expertise in producing reproducible research and Matlab. Hypothetically the instructor should focus on these areas. 
-
-3. There is an almost equal distribution of students who are confident in Github and those who know "none" about it. 
 
 
 
