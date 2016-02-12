@@ -141,7 +141,7 @@ plot(hclust(distance),
 - Miscellaneous languages
 - R and R packages
 
-### A correlation plot reveals the granular relationships between tools:
+#### A correlation plot reveals the granular relationships between tools:
 - There are some competitive products that are positively correlated while others are negatively correlated. For instance: dropbox and google drive are positively correlated while R and Python are negatively correlated. Perhaps it's because dropbox and google drive have similar usability while R and Python are less interchangeable.
 
 ```{r echo=FALSE}
@@ -228,22 +228,22 @@ n2$print('inline',  include_assets=TRUE)
 
 
 # Tool expertise by program
--	Generally, Data Science students know less about all these first five tools. But they are pretty good at using Github. 
--	Other masters other than data science are good at R manipulation and R graphics. At least, none of them know nothing about these two tools.
--	Among all these six tools, experts are minority. Most of them are in statistics major.
--	Most of students, whatever his/her major is, only know a little about them.
+-	Data Science Certification students tend to have the highest proportion of students with no experience with each tool, but they are pretty good at using Github.
+-	Most other programs are familiar with skills in R.
+-	Among all these six tools, experts are minority. Statistics major has the highest proportion of experts.
 ```{r echo=FALSE, warning=FALSE}
 programs <- c('IDSE (master)', 'Data Science Certification', 'Statistics (master)', 'Other masters')
 par(mfrow=c(3,2))
 
 exp.by.program <- data[data$program %in% programs,]
 exp.by.program['program'] <- factor(exp.by.program$program, levels=unique(exp.by.program$program))
-barplot(prop.table(table(exp.by.program$exp.R.manipulation, exp.by.program$program), 2), las=1, main='R Manipulation', cex.names=.6)
-barplot(prop.table(table(exp.by.program$exp.R.graphics, exp.by.program$program), 2), las=1, main='R Graphics', cex.names=.6)
-barplot(prop.table(table(exp.by.program$exp.R.advanced, exp.by.program$program), 2), las=1, main='R Advanced', cex.names=.6)
-barplot(prop.table(table(exp.by.program$exp.R.reproducible, exp.by.program$program), 2), las=1, main='R reproducible', cex.names=.6)
-barplot(prop.table(table(exp.by.program$exp.Matlab, exp.by.program$program), 2), las=1, main='Matlab', cex.names=.6)
-barplot(prop.table(table(exp.by.program$exp.Github, exp.by.program$program), 2), las=1, main='Github', cex.names=.6)
+barplot(prop.table(table(exp.by.program$exp.R.manipulation, exp.by.program$program), 2), las=1, main='R Manipulation', cex.names=.5)
+barplot(prop.table(table(exp.by.program$exp.R.graphics, exp.by.program$program), 2), las=1, main='R Graphics', cex.names=.5)
+barplot(prop.table(table(exp.by.program$exp.R.advanced, exp.by.program$program), 2), las=1, main='R Advanced', cex.names=.5)
+barplot(prop.table(table(exp.by.program$exp.R.reproducible, exp.by.program$program), 2), las=1, main='R reproducible', cex.names=.5)
+barplot(prop.table(table(exp.by.program$exp.Matlab, exp.by.program$program), 2), las=1, main='Matlab', cex.names=.5)
+barplot(prop.table(table(exp.by.program$exp.Github, exp.by.program$program), 2), las=1, main='Github', cex.names=.5, legend.text = TRUE, 
+        args.legend = list(x = "topright", bty = "n", inset=c(-.12, -1.3)))
 ```
 
 
@@ -260,6 +260,13 @@ for (name.col in col.names.data){
 }
 data.splot.tool=as.data.frame(matrix)
 colnames(data.splot.tool)=c("tool","program","use")
+levels(data.splot.tool$tool)[levels(data.splot.tool$tool)=="exp.R.advanced"] <- "R.advanced"
+levels(data.splot.tool$tool)[levels(data.splot.tool$tool)=="exp.R.reproducible"] <- "R.reproducible"
+levels(data.splot.tool$tool)[levels(data.splot.tool$tool)=="exp.R.manipulation"] <- "R.manipulation"
+levels(data.splot.tool$tool)[levels(data.splot.tool$tool)=="exp.R.graphics"] <- "R.graphics"
+levels(data.splot.tool$tool)[levels(data.splot.tool$tool)=="exp.Matlab"] <- "Matlab"
+levels(data.splot.tool$tool)[levels(data.splot.tool$tool)=="exp.Github"] <- "Github"
+
 data.splot.f=data.splot.tool[data.splot.tool$use != "None",]
 data.final=as.data.frame(table(data.splot.f$program,data.splot.f$tool))
 data.s=as.data.frame(table(data.splot.tool$tool,data.splot.tool$use))
@@ -286,7 +293,5 @@ sankeyPlotTool$save('sankey_tool.html',  standalone = TRUE)
 
 
 ```
-<iframe width="900" height="520" frameborder="0" src = 'sankey_tool.html' ></iframe>
 This Chart shows a relation between *program* , *tool* and *experience level*. We removed the association between program and tool when the level of experience is None. In Master Data-Science (IDSE) Github and Matlab are the most unknown topic and in certification program have a poor experience with R.reproducible. However 30% of all students do not have any knowledge in Matlab and 91% of them have worked with R.Manipulation.
-Analysis on Tools:
-
+<iframe width="900" height="520" frameborder="0" src = 'sankey_tool.html' ></iframe>
